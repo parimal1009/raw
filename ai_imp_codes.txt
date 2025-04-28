@@ -355,230 +355,343 @@ if __name__ == "__main__":
 
 
 
+Codes/A_starDWHeuristic.py
 
-
-🔵 8. A* — Directed Weighted Graph and Heuristic (Read from .csv file)
-Files needed:
-graph.csv : Source,Target,Weight
-
-heuristic.csv : Node,Heuristic
-
-Code:
-python
-Copy
-Edit
+"""Implement A* algorithm. Read directed weighted graph and heuristic
+values from a .csv file. """
 import csv
 import heapq
 from collections import defaultdict
+import os
 
-def read_directed_weighted_graph_csv(filename):
+# Function to read directed, weighted graph from a CSV file
+def read_graph_from_csv(filepath):
     graph = defaultdict(list)
-    with open(filename, 'r') as file:
-        reader = csv.reader(file)
-        next(reader)  # Skip header
-        for src, tgt, weight in reader:
-            graph[src].append((tgt, int(weight)))
+    with open(filepath, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            u, v, w = row['from'], row['to'], int(row['weight'])
+            graph[u].append((v, w))  # Directed edge
     return graph
 
-def read_heuristics_csv(filename):
+# Function to read heuristic values from CSV
+def read_heuristics_from_csv(filepath):
     heuristics = {}
-    with open(filename, 'r') as file:
-        reader = csv.reader(file)
-        next(reader)  # Skip header
-        for node, h in reader:
-            heuristics[node] = int(h)
+    with open(filepath, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            heuristics[row['node']] = int(row['heuristic'])
     return heuristics
 
-def a_star(graph, heuristics, start, goal):
-    open_set = [(heuristics[start], 0, start)]  # (f = g+h, g, node)
+# A* Search Algorithm
+def a_star_search(graph, heuristics, start, goal):
+    open_set = [(heuristics[start], 0, start, [start])]  # (f = g + h, g, node, path)
     visited = set()
 
-    print("A* Search Path:")
     while open_set:
-        f, g, node = heapq.heappop(open_set)
-        if node == goal:
-            print(node)
+        f, g, current, path = heapq.heappop(open_set)
+
+        if current in visited:
+            continue
+        visited.add(current)
+
+        if current == goal:
+            print("A* Path:", " -> ".join(path))
+            print("Total cost:", g)
             return
-        if node not in visited:
-            print(node, end=" -> ")
-            visited.add(node)
 
-            for neighbor, cost in graph[node]:
-                if neighbor not in visited:
-                    new_g = g + cost
-                    new_f = new_g + heuristics.get(neighbor, float('inf'))
-                    heapq.heappush(open_set, (new_f, new_g, neighbor))
+        for neighbor, weight in graph[current]:
+            if neighbor not in visited:
+                new_g = g + weight
+                new_f = new_g + heuristics.get(neighbor, float('inf'))
+                heapq.heappush(open_set, (new_f, new_g, neighbor, path + [neighbor]))
 
+    print("Goal not reachable.")
+
+# Main
 if __name__ == "__main__":
-    graph = read_directed_weighted_graph_csv('graph.csv')
-    heuristics = read_heuristics_csv('heuristic.csv')
-    start = input("Enter start node: ")
-    goal = input("Enter goal node: ")
-    a_star(graph, heuristics, start, goal)
-🟢 9. A* — Directed Weighted Graph and Heuristic (Read from User)
-python
-Copy
-Edit
+    # Set file paths
+    graph_csv = os.path.join("CSV Files", "graph_data.csv")
+    heuristics_csv = os.path.join("CSV Files", "heuristic_data.csv")
+
+    # Read graph and heuristics
+    graph = read_graph_from_csv(graph_csv)
+    heuristics = read_heuristics_from_csv(heuristics_csv)
+
+    start_node = input("Enter start node: ").strip()
+    goal_node = input("Enter goal node: ").strip()
+
+    a_star_search(graph, heuristics, start_node, goal_node)
+
+
+
+Codes/A_starDWHeuristicUserIn.py
+
+"""Implement A* algorithm. Read directed weighted graph and heuristic
+values from user."""
+
 import heapq
 from collections import defaultdict
 
-def read_directed_weighted_graph():
+# Read directed, weighted graph from user
+def build_graph():
     graph = defaultdict(list)
-    n = int(input("Enter number of edges: "))
-    print("Enter edges as: Source Target Weight")
-    for _ in range(n):
-        src, tgt, weight = input().split()
-        graph[src].append((tgt, int(weight)))
+    num_edges = int(input("Enter number of edges: "))
+    print("Enter each edge as: from_node to_node weight")
+    for _ in range(num_edges):
+        u, v, w = input().split()
+        w = int(w)
+        graph[u].append((v, w))  # Directed edge
     return graph
 
+# Read heuristic values from user
 def read_heuristics():
     heuristics = {}
-    n = int(input("Enter number of nodes for heuristics: "))
-    print("Enter heuristic as: Node HeuristicValue")
-    for _ in range(n):
+    num_nodes = int(input("Enter number of nodes with heuristic values: "))
+    print("Enter each node and its heuristic value (e.g., A 3):")
+    for _ in range(num_nodes):
         node, h = input().split()
         heuristics[node] = int(h)
     return heuristics
 
-def a_star(graph, heuristics, start, goal):
-    open_set = [(heuristics[start], 0, start)]  # (f = g+h, g, node)
+# A* Search Algorithm
+def a_star_search(graph, heuristics, start, goal):
+    open_set = [(heuristics[start], 0, start, [start])]  # (f = g + h, g, node, path)
     visited = set()
-
-    print("A* Search Path:")
     while open_set:
-        f, g, node = heapq.heappop(open_set)
-        if node == goal:
-            print(node)
+        f, g, current, path = heapq.heappop(open_set)
+        if current in visited:
+            continue
+        visited.add(current)
+        if current == goal:
+            print("A* Path:", " -> ".join(path))
+            print("Total Cost:", g)
             return
-        if node not in visited:
-            print(node, end=" -> ")
-            visited.add(node)
+        for neighbor, weight in graph[current]:
+            if neighbor not in visited:
+                new_g = g + weight
+                new_f = new_g + heuristics.get(neighbor, float('inf'))
+                heapq.heappush(open_set, (new_f, new_g, neighbor, path + [neighbor]))
+    print("Goal not reachable.")
 
-            for neighbor, cost in graph[node]:
-                if neighbor not in visited:
-                    new_g = g + cost
-                    new_f = new_g + heuristics.get(neighbor, float('inf'))
-                    heapq.heappush(open_set, (new_f, new_g, neighbor))
-
+# Main
 if __name__ == "__main__":
-    graph = read_directed_weighted_graph()
+    graph = build_graph()
     heuristics = read_heuristics()
-    start = input("Enter start node: ")
-    goal = input("Enter goal node: ")
-    a_star(graph, heuristics, start, goal)
-🟣 10. A* — Undirected Weighted Graph and Heuristic (Read from .csv file)
-Files needed:
-graph.csv : Source,Target,Weight
+    start = input("Enter the start node: ")
+    goal = input("Enter the goal node: ")
 
-heuristic.csv : Node,Heuristic
+    a_star_search(graph, heuristics, start, goal)
 
-Code:
-python
-Copy
-Edit
+
+
+Codes/A_starUndWHeuristicCSV.py
+
+
+""" Implement A* algorithm. Read undirected weighted graph and heuristic
+values from a .csv file """
 import csv
 import heapq
 from collections import defaultdict
+import os
 
-def read_undirected_weighted_graph_csv(filename):
+# Function to read undirected weighted graph from a CSV file
+def read_graph_from_csv(filepath):
     graph = defaultdict(list)
-    with open(filename, 'r') as file:
-        reader = csv.reader(file)
-        next(reader)
-        for src, tgt, weight in reader:
-            weight = int(weight)
-            graph[src].append((tgt, weight))
-            graph[tgt].append((src, weight))  # Undirected
+    with open(filepath, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            u, v, w = row['from'], row['to'], int(row['weight'])
+            graph[u].append((v, w))
+            graph[v].append((u, w))  # Since it's undirected
     return graph
 
-def read_heuristics_csv(filename):
+# Function to read heuristic values from a CSV file
+def read_heuristics_from_csv(filepath):
     heuristics = {}
-    with open(filename, 'r') as file:
-        reader = csv.reader(file)
-        next(reader)
-        for node, h in reader:
-            heuristics[node] = int(h)
+    with open(filepath, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            heuristics[row['node']] = int(row['heuristic'])
     return heuristics
 
-def a_star(graph, heuristics, start, goal):
-    open_set = [(heuristics[start], 0, start)]
+# A* Search Algorithm
+def a_star_search(graph, heuristics, start, goal):
+    open_set = [(heuristics[start], 0, start, [start])]  # (f = g + h, g, node, path)
     visited = set()
 
-    print("A* Search Path:")
     while open_set:
-        f, g, node = heapq.heappop(open_set)
-        if node == goal:
-            print(node)
+        f, g, current, path = heapq.heappop(open_set)
+
+        if current in visited:
+            continue
+        visited.add(current)
+
+        if current == goal:
+            print("A* Path:", " -> ".join(path))
+            print("Total Cost:", g)
             return
-        if node not in visited:
-            print(node, end=" -> ")
-            visited.add(node)
 
-            for neighbor, cost in graph[node]:
-                if neighbor not in visited:
-                    new_g = g + cost
-                    new_f = new_g + heuristics.get(neighbor, float('inf'))
-                    heapq.heappush(open_set, (new_f, new_g, neighbor))
+        for neighbor, weight in graph[current]:
+            if neighbor not in visited:
+                new_g = g + weight
+                new_f = new_g + heuristics.get(neighbor, float('inf'))
+                heapq.heappush(open_set, (new_f, new_g, neighbor, path + [neighbor]))
 
+    print("Goal not reachable.")
+
+# Main
 if __name__ == "__main__":
-    graph = read_undirected_weighted_graph_csv('graph.csv')
-    heuristics = read_heuristics_csv('heuristic.csv')
-    start = input("Enter start node: ")
-    goal = input("Enter goal node: ")
-    a_star(graph, heuristics, start, goal)
-🟡 11. A* — Undirected Weighted Graph and Heuristic (Read from User)
-python
-Copy
-Edit
+    graph_csv = os.path.join("CSV Files", "graphData2.csv")
+    heuristics_csv = os.path.join("CSV Files", "heuristicData2.csv")
+    graph = read_graph_from_csv(graph_csv)
+    heuristics = read_heuristics_from_csv(heuristics_csv)
+    start_node = input("Enter start node: ").strip()
+    goal_node = input("Enter goal node: ").strip()
+    a_star_search(graph, heuristics, start_node, goal_node)
+
+
+Codes/A_starUndWHeuristicUserIn.py
+
+"""Implement A* algorithm. Read undirected weighted graph and heuristic
+values from user. """
 import heapq
 from collections import defaultdict
 
-def read_undirected_weighted_graph():
+# Read undirected, weighted graph from user
+def build_graph():
     graph = defaultdict(list)
-    n = int(input("Enter number of edges: "))
-    print("Enter edges as: Source Target Weight")
-    for _ in range(n):
-        src, tgt, weight = input().split()
-        weight = int(weight)
-        graph[src].append((tgt, weight))
-        graph[tgt].append((src, weight))  # Undirected
+    num_edges = int(input("Enter number of edges: "))
+    print("Enter each edge as: from_node to_node weight")
+    for _ in range(num_edges):
+        u, v, w = input().split()
+        w = int(w)
+        graph[u].append((v, w))
+        graph[v].append((u, w))  # Since it's undirected
     return graph
 
+# Read heuristic values from user
 def read_heuristics():
     heuristics = {}
-    n = int(input("Enter number of nodes for heuristics: "))
-    print("Enter heuristic as: Node HeuristicValue")
-    for _ in range(n):
+    num_nodes = int(input("Enter number of nodes with heuristic values: "))
+    print("Enter each node and its heuristic value (e.g., A 3):")
+    for _ in range(num_nodes):
         node, h = input().split()
         heuristics[node] = int(h)
     return heuristics
 
-def a_star(graph, heuristics, start, goal):
-    open_set = [(heuristics[start], 0, start)]
+# A* Search Algorithm
+def a_star_search(graph, heuristics, start, goal):
+    open_set = [(heuristics[start], 0, start, [start])]  # (f = g + h, g, node, path)
+    visited = set()
+    while open_set:
+        f, g, current, path = heapq.heappop(open_set)
+        if current in visited:
+            continue
+        visited.add(current)
+        if current == goal:
+            print("A* Path:", " -> ".join(path))
+            print("Total Cost:", g)
+            return
+        for neighbor, weight in graph[current]:
+            if neighbor not in visited:
+                new_g = g + weight
+                new_f = new_g + heuristics.get(neighbor, float('inf'))
+                heapq.heappush(open_set, (new_f, new_g, neighbor, path + [neighbor]))
+
+    print("Goal not reachable.")
+
+# Main
+if __name__ == "__main__":
+    # Build graph and read heuristics from user input
+    graph = build_graph()
+    heuristics = read_heuristics()
+
+    # Get start and goal nodes from user
+    start_node = input("Enter the start node: ")
+    goal_node = input("Enter the goal node: ")
+
+    # Run A* Search Algorithm
+    a_star_search(graph, heuristics, start_node, goal_node)
+
+
+Codes/A_star_GOOGLE_COLAB.py
+
+import csv
+import heapq
+from collections import defaultdict
+from google.colab import files
+import os
+
+# Function to read directed, weighted graph from a CSV file
+def read_graph_from_csv(filepath):
+    graph = defaultdict(list)
+    with open(filepath, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            u, v, w = row['from'], row['to'], int(row['weight'])
+            graph[u].append((v, w))  # Directed edge
+    return graph
+
+# Function to read heuristic values from CSV
+def read_heuristics_from_csv(filepath):
+    heuristics = {}
+    with open(filepath, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            heuristics[row['node']] = int(row['heuristic'])
+    return heuristics
+
+# A* Search Algorithm
+def a_star_search(graph, heuristics, start, goal):
+    open_set = [(heuristics[start], 0, start, [start])]  # (f = g + h, g, node, path)
     visited = set()
 
-    print("A* Search Path:")
     while open_set:
-        f, g, node = heapq.heappop(open_set)
-        if node == goal:
-            print(node)
+        f, g, current, path = heapq.heappop(open_set)
+
+        if current in visited:
+            continue
+        visited.add(current)
+
+        if current == goal:
+            print("A* Path:", " -> ".join(path))
+            print("Total cost:", g)
             return
-        if node not in visited:
-            print(node, end=" -> ")
-            visited.add(node)
 
-            for neighbor, cost in graph[node]:
-                if neighbor not in visited:
-                    new_g = g + cost
-                    new_f = new_g + heuristics.get(neighbor, float('inf'))
-                    heapq.heappush(open_set, (new_f, new_g, neighbor))
+        for neighbor, weight in graph[current]:
+            if neighbor not in visited:
+                new_g = g + weight
+                new_f = new_g + heuristics.get(neighbor, float('inf'))
+                heapq.heappush(open_set, (new_f, new_g, neighbor, path + [neighbor]))
 
+    print("Goal not reachable.")
+
+# Main function for file upload and running the A* algorithm
+def main():
+    # Upload graph and heuristic files from your PC
+    print("Please upload the graph data CSV file.")
+    uploaded_files = files.upload()
+    graph_file = next(iter(uploaded_files))  # Get the name of the uploaded file for graph data
+
+    print("Please upload the heuristic data CSV file.")
+    uploaded_files = files.upload()
+    heuristic_file = next(iter(uploaded_files))  # Get the name of the uploaded file for heuristics
+
+    # Read graph and heuristics from the uploaded files
+    graph = read_graph_from_csv(graph_file)
+    heuristics = read_heuristics_from_csv(heuristic_file)
+
+    # Ask for start and goal nodes
+    start_node = input("Enter start node: ").strip()
+    goal_node = input("Enter goal node: ").strip()
+
+    # Perform A* search
+    a_star_search(graph, heuristics, start_node, goal_node)
+
+# Run the main function
 if __name__ == "__main__":
-    graph = read_undirected_weighted_graph()
-    heuristics = read_heuristics()
-    start = input("Enter start node: ")
-    goal = input("Enter goal node: ")
-    a_star(graph, heuristics, start, goal)
+    main()
 
 
 
