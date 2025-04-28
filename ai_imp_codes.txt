@@ -104,222 +104,256 @@ if __name__ == "__main__":
     bfs(graph, start_node)
 
 
-#task 4 🔵 4. Best First Search — Directed Unweighted Graph (Heuristic from User)
+BFSHeuristicDUnwUserIn.py
 
+"""Implement Best First Search Algorithm. Read the directed unweighted
+graph and the heuristic values from user. """
+
+"""Implement Best First Search Algorithm. Read the directed unweighted
+graph and the heuristic values from user. """
 import heapq
-from collections import defaultdict
 
-# Read directed unweighted graph from user
-def read_directed_unweighted_graph():
-    graph = defaultdict(list)
-    n = int(input("Enter number of edges: "))
-    print("Enter edges in the format: Source Target")
-    for _ in range(n):
-        src, tgt = input().split()
-        graph[src].append(tgt)
+# Function to read the graph from user input
+def build_graph():
+    graph = {}
+    num_edges = int(input("Enter number of edges: "))
+    print("Enter each edge as two space-separated nodes (e.g., A B):")
+    for _ in range(num_edges):
+        u, v = input().split()
+        if u not in graph:
+            graph[u] = []
+        graph[u].append(v)
     return graph
 
-# Read heuristic values
+# Function to read heuristic values from user
 def read_heuristics():
     heuristics = {}
-    n = int(input("Enter number of nodes for heuristics: "))
-    print("Enter heuristics as: Node HeuristicValue")
-    for _ in range(n):
+    num_nodes = int(input("Enter number of nodes with heuristic values: "))
+    print("Enter node and its heuristic value (e.g., A 3):")
+    for _ in range(num_nodes):
         node, h = input().split()
         heuristics[node] = int(h)
     return heuristics
 
-# Best First Search
+# Best First Search algorithm
 def best_first_search(graph, heuristics, start, goal):
     visited = set()
-    queue = [(heuristics[start], start)]
+    priority_queue = [(heuristics[start], start)]  # (heuristic, node)
 
-    print("Best First Search Path:")
-    while queue:
-        _, node = heapq.heappop(queue)
-        if node not in visited:
-            print(node, end=" ")
-            visited.add(node)
+    while priority_queue:
+        h, current = heapq.heappop(priority_queue)
+        if current in visited:
+            continue
+        print(current, end=' ')
+        visited.add(current)
+        if current == goal:
+            print("\nGoal reached.")
+            return
+        for neighbor in graph.get(current, []):
+            if neighbor not in visited:
+                heapq.heappush(priority_queue, (heuristics[neighbor], neighbor))
+    print("\nGoal not reachable.")
 
-            if node == goal:
-                break
-
-            for neighbor in graph[node]:
-                if neighbor not in visited:
-                    heapq.heappush(queue, (heuristics[neighbor], neighbor))
-
+# Main
 if __name__ == "__main__":
-    graph = read_directed_unweighted_graph()
+    graph = build_graph()
     heuristics = read_heuristics()
-    start = input("Enter start node: ")
-    goal = input("Enter goal node: ")
+    start = input("Enter the start node: ")
+    goal = input("Enter the goal node: ")
+
+    print("Best First Search traversal:")
     best_first_search(graph, heuristics, start, goal)
 
 
 
 
+BFSHeuristicDW
 
 
-#task 5 🟢 5. Best First Search — Undirected Weighted Graph (Heuristic from User)
-
+"""Implement Best First Search Algorithm. Read the directed weighted graph
+and the heuristic values from user."""
 import heapq
 from collections import defaultdict
 
-# Read undirected weighted graph
-def read_undirected_weighted_graph():
+# Build a directed, weighted graph from user input
+def build_graph():
     graph = defaultdict(list)
-    n = int(input("Enter number of edges: "))
-    print("Enter edges as: Source Target Weight")
-    for _ in range(n):
-        src, tgt, w = input().split()
+    num_edges = int(input("Enter number of edges: "))
+    print("Enter each edge as: from_node to_node weight")
+    for _ in range(num_edges):
+        u, v, w = input().split()
         w = int(w)
-        graph[src].append((tgt, w))
-        graph[tgt].append((src, w))  # Undirected
+        graph[u].append((v, w))  # Directed edge from u to v
     return graph
 
-# Read heuristic values
+# Read heuristic values from user
 def read_heuristics():
     heuristics = {}
-    n = int(input("Enter number of nodes for heuristics: "))
-    print("Enter heuristics as: Node HeuristicValue")
-    for _ in range(n):
+    num_nodes = int(input("Enter number of nodes with heuristic values: "))
+    print("Enter each node and its heuristic value (e.g., A 3):")
+    for _ in range(num_nodes):
         node, h = input().split()
         heuristics[node] = int(h)
     return heuristics
 
-# Best First Search
+# Best First Search (Greedy) Algorithm
 def best_first_search(graph, heuristics, start, goal):
     visited = set()
-    queue = [(heuristics[start], start)]
+    priority_queue = [(heuristics[start], start)]  # (heuristic, node)
+    while priority_queue:
+        h, current = heapq.heappop(priority_queue)
+        if current in visited:
+            continue
+        print(current, end=' ')
+        visited.add(current)
+        if current == goal:
+            print("\nGoal reached.")
+            return
+        for neighbor, weight in graph[current]:
+            if neighbor not in visited:
+                heapq.heappush(priority_queue, (heuristics[neighbor], neighbor))
 
-    print("Best First Search Path:")
-    while queue:
-        _, node = heapq.heappop(queue)
-        if node not in visited:
-            print(node, end=" ")
-            visited.add(node)
+    print("\nGoal not reachable.")
 
-            if node == goal:
-                break
-
-            for neighbor, weight in graph[node]:
-                if neighbor not in visited:
-                    heapq.heappush(queue, (heuristics[neighbor], neighbor))
-
+# Main
 if __name__ == "__main__":
-    graph = read_undirected_weighted_graph()
+    graph = build_graph()
     heuristics = read_heuristics()
-    start = input("Enter start node: ")
-    goal = input("Enter goal node: ")
+    start = input("Enter the start node: ")
+    goal = input("Enter the goal node: ")
+
+    print("Best First Search traversal:")
     best_first_search(graph, heuristics, start, goal)
 
 
+BFSHeuristicUndUnw.py
 
-#TASK 6 🟣 6. Best First Search — Undirected Unweighted Graph (Heuristic from User)
 
+"""Implement Best First Search Algorithm. Read the undirected unweighted
+graph and the heuristic values from user. """
 import heapq
 from collections import defaultdict
 
-# Read undirected unweighted graph
-def read_undirected_unweighted_graph():
+# Build an undirected unweighted graph from user input
+def build_graph():
     graph = defaultdict(list)
-    n = int(input("Enter number of edges: "))
-    print("Enter edges as: Source Target")
-    for _ in range(n):
-        src, tgt = input().split()
-        graph[src].append(tgt)
-        graph[tgt].append(src)  # Undirected
+    num_edges = int(input("Enter number of edges: "))
+    print("Enter each edge as: node1 node2")
+    for _ in range(num_edges):
+        u, v = input().split()
+        graph[u].append(v)
+        graph[v].append(u)  # Undirected graph
     return graph
 
-# Read heuristic values
+# Read heuristic values from user
 def read_heuristics():
     heuristics = {}
-    n = int(input("Enter number of nodes for heuristics: "))
-    print("Enter heuristics as: Node HeuristicValue")
-    for _ in range(n):
+    num_nodes = int(input("Enter number of nodes with heuristic values: "))
+    print("Enter each node and its heuristic value (e.g., A 3):")
+    for _ in range(num_nodes):
         node, h = input().split()
         heuristics[node] = int(h)
     return heuristics
 
-# Best First Search
+# Best First Search (Greedy) Algorithm
 def best_first_search(graph, heuristics, start, goal):
     visited = set()
-    queue = [(heuristics[start], start)]
+    priority_queue = [(heuristics[start], start)]  # (heuristic, node)
 
-    print("Best First Search Path:")
-    while queue:
-        _, node = heapq.heappop(queue)
-        if node not in visited:
-            print(node, end=" ")
-            visited.add(node)
+    while priority_queue:
+        h, current = heapq.heappop(priority_queue)
+        if current in visited:
+            continue
+        print(current, end=' ')
+        visited.add(current)
+        if current == goal:
+            print("\nGoal reached.")
+            return
+        for neighbor in graph[current]:
+            if neighbor not in visited:
+                heapq.heappush(priority_queue, (heuristics[neighbor], neighbor))
 
-            if node == goal:
-                break
+    print("\nGoal not reachable.")
 
-            for neighbor in graph[node]:
-                if neighbor not in visited:
-                    heapq.heappush(queue, (heuristics[neighbor], neighbor))
-
+# Main
 if __name__ == "__main__":
-    graph = read_undirected_unweighted_graph()
+    graph = build_graph()
     heuristics = read_heuristics()
-    start = input("Enter start node: ")
-    goal = input("Enter goal node: ")
+    start = input("Enter the start node: ")
+    goal = input("Enter the goal node: ")
+
+    print("Best First Search traversal:")
     best_first_search(graph, heuristics, start, goal)
 
 
 
-#task 7 🟡 7. Best First Search — Directed Weighted Graph (Heuristic from User)
+Codes/BFSHeuristicUserInUndirected.py
+
+
+"""Implement Best First Search Algorithm. Read the undirected weighted
+graph and the heuristic values from user"""
 
 import heapq
 from collections import defaultdict
 
-# Read directed weighted graph
-def read_directed_weighted_graph():
+# Function to read undirected weighted graph from user
+def build_graph():
     graph = defaultdict(list)
-    n = int(input("Enter number of edges: "))
-    print("Enter edges as: Source Target Weight")
-    for _ in range(n):
-        src, tgt, w = input().split()
+    num_edges = int(input("Enter number of edges: "))
+    print("Enter each edge as: node1 node2 weight")
+    for _ in range(num_edges):
+        u, v, w = input().split()
         w = int(w)
-        graph[src].append((tgt, w))
+        graph[u].append((v, w))
+        graph[v].append((u, w))  # because it's undirected
     return graph
 
-# Read heuristic values
+# Function to read heuristic values
 def read_heuristics():
     heuristics = {}
-    n = int(input("Enter number of nodes for heuristics: "))
-    print("Enter heuristics as: Node HeuristicValue")
-    for _ in range(n):
+    num_nodes = int(input("Enter number of nodes with heuristic values: "))
+    print("Enter node and its heuristic value (e.g., A 3):")
+    for _ in range(num_nodes):
         node, h = input().split()
         heuristics[node] = int(h)
     return heuristics
 
-# Best First Search
+# Best First Search algorithm (Greedy using heuristics only)
 def best_first_search(graph, heuristics, start, goal):
     visited = set()
-    queue = [(heuristics[start], start)]
+    priority_queue = [(heuristics[start], start)]
 
-    print("Best First Search Path:")
-    while queue:
-        _, node = heapq.heappop(queue)
-        if node not in visited:
-            print(node, end=" ")
-            visited.add(node)
+    while priority_queue:
+        h, current = heapq.heappop(priority_queue)
 
-            if node == goal:
-                break
+        if current in visited:
+            continue
 
-            for neighbor, weight in graph[node]:
-                if neighbor not in visited:
-                    heapq.heappush(queue, (heuristics[neighbor], neighbor))
+        print(current, end=' ')
+        visited.add(current)
 
+        if current == goal:
+            print("\nGoal reached.")
+            return
+
+        for neighbor, weight in graph[current]:
+            if neighbor not in visited:
+                heapq.heappush(priority_queue, (heuristics[neighbor], neighbor))
+
+    print("\nGoal not reachable.")
+
+# Main
 if __name__ == "__main__":
-    graph = read_directed_weighted_graph()
+    graph = build_graph()
     heuristics = read_heuristics()
-    start = input("Enter start node: ")
-    goal = input("Enter goal node: ")
+    start = input("Enter the start node: ")
+    goal = input("Enter the goal node: ")
+
+    print("Best First Search traversal:")
     best_first_search(graph, heuristics, start, goal)
+
+
+
 
 
 
