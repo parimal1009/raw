@@ -1,0 +1,1768 @@
+# Task 1: Recursive DFS reading graph from CSV file
+
+import pandas as pd
+from collections import defaultdict
+
+# Read graph from CSV
+filepath = r'C:\Users\parim\OneDrive\Documents\Artificial Intelligence LAB\ASSIGNMENT_1\edges.csv'
+edges_df = pd.read_csv(filepath)
+
+# Build graph
+graph = defaultdict(list)
+for _, row in edges_df.iterrows():
+    graph[row['Source']].append(row['Target'])
+    graph[row['Target']].append(row['Source'])  # Undirected
+
+# Recursive DFS function
+o def dfs_recursive(graph, node, visited):
+    if node not in visited:
+        print(node, end=" ")
+        visited.add(node)
+        for neighbor in graph[node]:
+            dfs_recursive(graph, neighbor, visited)
+
+if __name__ == "__main__":
+    start_node = input("Enter the start node for Recursive DFS: ")
+    visited = set()
+    print("Recursive DFS Traversal:")
+    dfs_recursive(graph, start_node, visited)
+
+
+
+
+# Task 2: Non-Recursive DFS reading graph from user input
+
+from collections import defaultdict
+
+# Read graph from user
+def read_graph_from_user():
+    graph = defaultdict(list)
+    n = int(input("Enter number of edges: "))
+    print("Enter edges in the format: Source Target")
+    for _ in range(n):
+        src, tgt = input().split()
+        graph[src].append(tgt)
+        graph[tgt].append(src)  # Undirected
+    return graph
+
+# Non-Recursive DFS function
+def dfs_non_recursive(graph, start):
+    visited = set()
+    stack = [start]
+
+    print("Non-Recursive DFS Traversal:")
+    while stack:
+        node = stack.pop()
+        if node not in visited:
+            print(node, end=" ")
+            visited.add(node)
+            for neighbor in reversed(graph[node]):  # reversed to maintain order
+                if neighbor not in visited:
+                    stack.append(neighbor)
+
+if __name__ == "__main__":
+    graph = read_graph_from_user()
+    start_node = input("Enter the start node for Non-Recursive DFS: ")
+    dfs_non_recursive(graph, start_node)
+
+
+#TASK 3🔵 Code for Breadth First Search (BFS) reading from user input
+
+
+
+from collections import defaultdict, deque
+
+# Read graph from user
+def read_graph_from_user():
+    graph = defaultdict(list)
+    n = int(input("Enter number of edges: "))
+    print("Enter edges in the format: Source Target")
+    for _ in range(n):
+        src, tgt = input().split()
+        graph[src].append(tgt)
+        graph[tgt].append(src)  # Undirected
+    return graph
+
+# BFS function
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+
+    print("Breadth First Search (BFS) Traversal:")
+    while queue:
+        node = queue.popleft()
+        if node not in visited:
+            print(node, end=" ")
+            visited.add(node)
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    queue.append(neighbor)
+
+if __name__ == "__main__":
+    graph = read_graph_from_user()
+    start_node = input("Enter the start node for BFS: ")
+    bfs(graph, start_node)
+
+
+#task 4 🔵 4. Best First Search — Directed Unweighted Graph (Heuristic from User)
+
+import heapq
+from collections import defaultdict
+
+# Read directed unweighted graph from user
+def read_directed_unweighted_graph():
+    graph = defaultdict(list)
+    n = int(input("Enter number of edges: "))
+    print("Enter edges in the format: Source Target")
+    for _ in range(n):
+        src, tgt = input().split()
+        graph[src].append(tgt)
+    return graph
+
+# Read heuristic values
+def read_heuristics():
+    heuristics = {}
+    n = int(input("Enter number of nodes for heuristics: "))
+    print("Enter heuristics as: Node HeuristicValue")
+    for _ in range(n):
+        node, h = input().split()
+        heuristics[node] = int(h)
+    return heuristics
+
+# Best First Search
+def best_first_search(graph, heuristics, start, goal):
+    visited = set()
+    queue = [(heuristics[start], start)]
+
+    print("Best First Search Path:")
+    while queue:
+        _, node = heapq.heappop(queue)
+        if node not in visited:
+            print(node, end=" ")
+            visited.add(node)
+
+            if node == goal:
+                break
+
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    heapq.heappush(queue, (heuristics[neighbor], neighbor))
+
+if __name__ == "__main__":
+    graph = read_directed_unweighted_graph()
+    heuristics = read_heuristics()
+    start = input("Enter start node: ")
+    goal = input("Enter goal node: ")
+    best_first_search(graph, heuristics, start, goal)
+
+
+
+
+
+
+#task 5 🟢 5. Best First Search — Undirected Weighted Graph (Heuristic from User)
+
+import heapq
+from collections import defaultdict
+
+# Read undirected weighted graph
+def read_undirected_weighted_graph():
+    graph = defaultdict(list)
+    n = int(input("Enter number of edges: "))
+    print("Enter edges as: Source Target Weight")
+    for _ in range(n):
+        src, tgt, w = input().split()
+        w = int(w)
+        graph[src].append((tgt, w))
+        graph[tgt].append((src, w))  # Undirected
+    return graph
+
+# Read heuristic values
+def read_heuristics():
+    heuristics = {}
+    n = int(input("Enter number of nodes for heuristics: "))
+    print("Enter heuristics as: Node HeuristicValue")
+    for _ in range(n):
+        node, h = input().split()
+        heuristics[node] = int(h)
+    return heuristics
+
+# Best First Search
+def best_first_search(graph, heuristics, start, goal):
+    visited = set()
+    queue = [(heuristics[start], start)]
+
+    print("Best First Search Path:")
+    while queue:
+        _, node = heapq.heappop(queue)
+        if node not in visited:
+            print(node, end=" ")
+            visited.add(node)
+
+            if node == goal:
+                break
+
+            for neighbor, weight in graph[node]:
+                if neighbor not in visited:
+                    heapq.heappush(queue, (heuristics[neighbor], neighbor))
+
+if __name__ == "__main__":
+    graph = read_undirected_weighted_graph()
+    heuristics = read_heuristics()
+    start = input("Enter start node: ")
+    goal = input("Enter goal node: ")
+    best_first_search(graph, heuristics, start, goal)
+
+
+
+#TASK 6 🟣 6. Best First Search — Undirected Unweighted Graph (Heuristic from User)
+
+import heapq
+from collections import defaultdict
+
+# Read undirected unweighted graph
+def read_undirected_unweighted_graph():
+    graph = defaultdict(list)
+    n = int(input("Enter number of edges: "))
+    print("Enter edges as: Source Target")
+    for _ in range(n):
+        src, tgt = input().split()
+        graph[src].append(tgt)
+        graph[tgt].append(src)  # Undirected
+    return graph
+
+# Read heuristic values
+def read_heuristics():
+    heuristics = {}
+    n = int(input("Enter number of nodes for heuristics: "))
+    print("Enter heuristics as: Node HeuristicValue")
+    for _ in range(n):
+        node, h = input().split()
+        heuristics[node] = int(h)
+    return heuristics
+
+# Best First Search
+def best_first_search(graph, heuristics, start, goal):
+    visited = set()
+    queue = [(heuristics[start], start)]
+
+    print("Best First Search Path:")
+    while queue:
+        _, node = heapq.heappop(queue)
+        if node not in visited:
+            print(node, end=" ")
+            visited.add(node)
+
+            if node == goal:
+                break
+
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    heapq.heappush(queue, (heuristics[neighbor], neighbor))
+
+if __name__ == "__main__":
+    graph = read_undirected_unweighted_graph()
+    heuristics = read_heuristics()
+    start = input("Enter start node: ")
+    goal = input("Enter goal node: ")
+    best_first_search(graph, heuristics, start, goal)
+
+
+
+#task 7 🟡 7. Best First Search — Directed Weighted Graph (Heuristic from User)
+
+import heapq
+from collections import defaultdict
+
+# Read directed weighted graph
+def read_directed_weighted_graph():
+    graph = defaultdict(list)
+    n = int(input("Enter number of edges: "))
+    print("Enter edges as: Source Target Weight")
+    for _ in range(n):
+        src, tgt, w = input().split()
+        w = int(w)
+        graph[src].append((tgt, w))
+    return graph
+
+# Read heuristic values
+def read_heuristics():
+    heuristics = {}
+    n = int(input("Enter number of nodes for heuristics: "))
+    print("Enter heuristics as: Node HeuristicValue")
+    for _ in range(n):
+        node, h = input().split()
+        heuristics[node] = int(h)
+    return heuristics
+
+# Best First Search
+def best_first_search(graph, heuristics, start, goal):
+    visited = set()
+    queue = [(heuristics[start], start)]
+
+    print("Best First Search Path:")
+    while queue:
+        _, node = heapq.heappop(queue)
+        if node not in visited:
+            print(node, end=" ")
+            visited.add(node)
+
+            if node == goal:
+                break
+
+            for neighbor, weight in graph[node]:
+                if neighbor not in visited:
+                    heapq.heappush(queue, (heuristics[neighbor], neighbor))
+
+if __name__ == "__main__":
+    graph = read_directed_weighted_graph()
+    heuristics = read_heuristics()
+    start = input("Enter start node: ")
+    goal = input("Enter goal node: ")
+    best_first_search(graph, heuristics, start, goal)
+
+
+
+🔵 8. A* — Directed Weighted Graph and Heuristic (Read from .csv file)
+Files needed:
+graph.csv : Source,Target,Weight
+
+heuristic.csv : Node,Heuristic
+
+Code:
+python
+Copy
+Edit
+import csv
+import heapq
+from collections import defaultdict
+
+def read_directed_weighted_graph_csv(filename):
+    graph = defaultdict(list)
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header
+        for src, tgt, weight in reader:
+            graph[src].append((tgt, int(weight)))
+    return graph
+
+def read_heuristics_csv(filename):
+    heuristics = {}
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header
+        for node, h in reader:
+            heuristics[node] = int(h)
+    return heuristics
+
+def a_star(graph, heuristics, start, goal):
+    open_set = [(heuristics[start], 0, start)]  # (f = g+h, g, node)
+    visited = set()
+
+    print("A* Search Path:")
+    while open_set:
+        f, g, node = heapq.heappop(open_set)
+        if node == goal:
+            print(node)
+            return
+        if node not in visited:
+            print(node, end=" -> ")
+            visited.add(node)
+
+            for neighbor, cost in graph[node]:
+                if neighbor not in visited:
+                    new_g = g + cost
+                    new_f = new_g + heuristics.get(neighbor, float('inf'))
+                    heapq.heappush(open_set, (new_f, new_g, neighbor))
+
+if __name__ == "__main__":
+    graph = read_directed_weighted_graph_csv('graph.csv')
+    heuristics = read_heuristics_csv('heuristic.csv')
+    start = input("Enter start node: ")
+    goal = input("Enter goal node: ")
+    a_star(graph, heuristics, start, goal)
+🟢 9. A* — Directed Weighted Graph and Heuristic (Read from User)
+python
+Copy
+Edit
+import heapq
+from collections import defaultdict
+
+def read_directed_weighted_graph():
+    graph = defaultdict(list)
+    n = int(input("Enter number of edges: "))
+    print("Enter edges as: Source Target Weight")
+    for _ in range(n):
+        src, tgt, weight = input().split()
+        graph[src].append((tgt, int(weight)))
+    return graph
+
+def read_heuristics():
+    heuristics = {}
+    n = int(input("Enter number of nodes for heuristics: "))
+    print("Enter heuristic as: Node HeuristicValue")
+    for _ in range(n):
+        node, h = input().split()
+        heuristics[node] = int(h)
+    return heuristics
+
+def a_star(graph, heuristics, start, goal):
+    open_set = [(heuristics[start], 0, start)]  # (f = g+h, g, node)
+    visited = set()
+
+    print("A* Search Path:")
+    while open_set:
+        f, g, node = heapq.heappop(open_set)
+        if node == goal:
+            print(node)
+            return
+        if node not in visited:
+            print(node, end=" -> ")
+            visited.add(node)
+
+            for neighbor, cost in graph[node]:
+                if neighbor not in visited:
+                    new_g = g + cost
+                    new_f = new_g + heuristics.get(neighbor, float('inf'))
+                    heapq.heappush(open_set, (new_f, new_g, neighbor))
+
+if __name__ == "__main__":
+    graph = read_directed_weighted_graph()
+    heuristics = read_heuristics()
+    start = input("Enter start node: ")
+    goal = input("Enter goal node: ")
+    a_star(graph, heuristics, start, goal)
+🟣 10. A* — Undirected Weighted Graph and Heuristic (Read from .csv file)
+Files needed:
+graph.csv : Source,Target,Weight
+
+heuristic.csv : Node,Heuristic
+
+Code:
+python
+Copy
+Edit
+import csv
+import heapq
+from collections import defaultdict
+
+def read_undirected_weighted_graph_csv(filename):
+    graph = defaultdict(list)
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)
+        for src, tgt, weight in reader:
+            weight = int(weight)
+            graph[src].append((tgt, weight))
+            graph[tgt].append((src, weight))  # Undirected
+    return graph
+
+def read_heuristics_csv(filename):
+    heuristics = {}
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)
+        for node, h in reader:
+            heuristics[node] = int(h)
+    return heuristics
+
+def a_star(graph, heuristics, start, goal):
+    open_set = [(heuristics[start], 0, start)]
+    visited = set()
+
+    print("A* Search Path:")
+    while open_set:
+        f, g, node = heapq.heappop(open_set)
+        if node == goal:
+            print(node)
+            return
+        if node not in visited:
+            print(node, end=" -> ")
+            visited.add(node)
+
+            for neighbor, cost in graph[node]:
+                if neighbor not in visited:
+                    new_g = g + cost
+                    new_f = new_g + heuristics.get(neighbor, float('inf'))
+                    heapq.heappush(open_set, (new_f, new_g, neighbor))
+
+if __name__ == "__main__":
+    graph = read_undirected_weighted_graph_csv('graph.csv')
+    heuristics = read_heuristics_csv('heuristic.csv')
+    start = input("Enter start node: ")
+    goal = input("Enter goal node: ")
+    a_star(graph, heuristics, start, goal)
+🟡 11. A* — Undirected Weighted Graph and Heuristic (Read from User)
+python
+Copy
+Edit
+import heapq
+from collections import defaultdict
+
+def read_undirected_weighted_graph():
+    graph = defaultdict(list)
+    n = int(input("Enter number of edges: "))
+    print("Enter edges as: Source Target Weight")
+    for _ in range(n):
+        src, tgt, weight = input().split()
+        weight = int(weight)
+        graph[src].append((tgt, weight))
+        graph[tgt].append((src, weight))  # Undirected
+    return graph
+
+def read_heuristics():
+    heuristics = {}
+    n = int(input("Enter number of nodes for heuristics: "))
+    print("Enter heuristic as: Node HeuristicValue")
+    for _ in range(n):
+        node, h = input().split()
+        heuristics[node] = int(h)
+    return heuristics
+
+def a_star(graph, heuristics, start, goal):
+    open_set = [(heuristics[start], 0, start)]
+    visited = set()
+
+    print("A* Search Path:")
+    while open_set:
+        f, g, node = heapq.heappop(open_set)
+        if node == goal:
+            print(node)
+            return
+        if node not in visited:
+            print(node, end=" -> ")
+            visited.add(node)
+
+            for neighbor, cost in graph[node]:
+                if neighbor not in visited:
+                    new_g = g + cost
+                    new_f = new_g + heuristics.get(neighbor, float('inf'))
+                    heapq.heappush(open_set, (new_f, new_g, neighbor))
+
+if __name__ == "__main__":
+    graph = read_undirected_weighted_graph()
+    heuristics = read_heuristics()
+    start = input("Enter start node: ")
+    goal = input("Enter goal node: ")
+    a_star(graph, heuristics, start, goal)
+
+
+
+TASK 12
+✅ Code for Q12: Fuzzy Set Operations (3 Sets)
+
+
+def fuzzy_union(A, B):
+    return {key: max(A.get(key, 0), B.get(key, 0)) for key in set(A) | set(B)}
+
+def fuzzy_intersection(A, B):
+    return {key: min(A.get(key, 0), B.get(key, 0)) for key in set(A) & set(B)}
+
+def fuzzy_complement(A):
+    return {key: round(1 - value, 2) for key, value in A.items()}
+
+def read_fuzzy_set(name):
+    fuzzy_set = {}
+    print(f"Enter elements for Fuzzy Set {name}:")
+    while True:
+        element = input("Element (or 'done' to finish): ")
+        if element.lower() == 'done':
+            break
+        try:
+            membership = float(input(f"Membership value for {element}: "))
+            fuzzy_set[element] = membership
+        except ValueError:
+            print("Invalid membership value. Try again.")
+    return fuzzy_set
+
+# Read fuzzy sets
+A = read_fuzzy_set('A')
+B = read_fuzzy_set('B')
+C = read_fuzzy_set('C')
+
+# Perform operations
+union_AB = fuzzy_union(A, B)
+union_ABC = fuzzy_union(union_AB, C)
+
+intersection_AB = fuzzy_intersection(A, B)
+intersection_ABC = fuzzy_intersection(intersection_AB, C)
+
+complement_A = fuzzy_complement(A)
+complement_B = fuzzy_complement(B)
+complement_C = fuzzy_complement(C)
+
+# Output results
+print("\n--- Results ---")
+print("Fuzzy Set A:", A)
+print("Fuzzy Set B:", B)
+print("Fuzzy Set C:", C)
+print("\nUnion of A, B, C:", union_ABC)
+print("Intersection of A, B, C:", intersection_ABC)
+print("\nComplement of A:", complement_A)
+print("Complement of B:", complement_B)
+print("Complement of C:", complement_C)
+
+
+✅ Code for Q13: De Morgan’s Law (Complement of Union) (2 Sets)
+
+def fuzzy_union(A, B):
+    return {key: max(A.get(key, 0), B.get(key, 0)) for key in set(A) | set(B)}
+
+def fuzzy_intersection(A, B):
+    return {key: min(A.get(key, 0), B.get(key, 0)) for key in set(A) & set(B)}
+
+def fuzzy_complement(A):
+    return {key: round(1 - value, 2) for key, value in A.items()}
+
+def read_fuzzy_set(name):
+    fuzzy_set = {}
+    print(f"Enter elements for Fuzzy Set {name}:")
+    while True:
+        element = input("Element (or 'done' to finish): ")
+        if element.lower() == 'done':
+            break
+        try:
+            membership = float(input(f"Membership value for {element}: "))
+            fuzzy_set[element] = membership
+        except ValueError:
+            print("Invalid membership value. Try again.")
+    return fuzzy_set
+
+# Read fuzzy sets
+A = read_fuzzy_set('A')
+B = read_fuzzy_set('B')
+
+# Perform operations
+union_AB = fuzzy_union(A, B)
+complement_union = fuzzy_complement(union_AB)
+
+complement_A = fuzzy_complement(A)
+complement_B = fuzzy_complement(B)
+intersection_complements = fuzzy_intersection(complement_A, complement_B)
+
+# Output results
+print("\n--- Results ---")
+print("Fuzzy Set A:", A)
+print("Fuzzy Set B:", B)
+print("\nUnion of A and B:", union_AB)
+print("Complement of (A ∪ B):", complement_union)
+print("\nComplement of A:", complement_A)
+print("Complement of B:", complement_B)
+print("Intersection of complements (A' ∩ B'):", intersection_complements)
+print("\nDe Morgan’s Law (Complement of Union) Verified?:", complement_union == intersection_complements)
+
+
+✅ Code for Q14: De Morgan’s Law (Complement of Intersection) (2 Sets)
+
+
+def fuzzy_union(A, B):
+    return {key: max(A.get(key, 0), B.get(key, 0)) for key in set(A) | set(B)}
+
+def fuzzy_intersection(A, B):
+    return {key: min(A.get(key, 0), B.get(key, 0)) for key in set(A) & set(B)}
+
+def fuzzy_complement(A):
+    return {key: round(1 - value, 2) for key, value in A.items()}
+
+def read_fuzzy_set(name):
+    fuzzy_set = {}
+    print(f"Enter elements for Fuzzy Set {name}:")
+    while True:
+        element = input("Element (or 'done' to finish): ")
+        if element.lower() == 'done':
+            break
+        try:
+            membership = float(input(f"Membership value for {element}: "))
+            fuzzy_set[element] = membership
+        except ValueError:
+            print("Invalid membership value. Try again.")
+    return fuzzy_set
+
+# Read fuzzy sets
+A = read_fuzzy_set('A')
+B = read_fuzzy_set('B')
+
+# Perform operations
+intersection_AB = fuzzy_intersection(A, B)
+complement_intersection = fuzzy_complement(intersection_AB)
+
+complement_A = fuzzy_complement(A)
+complement_B = fuzzy_complement(B)
+union_complements = fuzzy_union(complement_A, complement_B)
+
+# Output results
+print("\n--- Results ---")
+print("Fuzzy Set A:", A)
+print("Fuzzy Set B:", B)
+print("\nIntersection of A and B:", intersection_AB)
+print("Complement of (A ∩ B):", complement_intersection)
+print("\nComplement of A:", complement_A)
+print("Complement of B:", complement_B)
+print("Union of complements (A' ∪ B'):", union_complements)
+print("\nDe Morgan’s Law (Complement of Intersection) Verified?:", complement_intersection == union_complements)
+
+
+TASK 15 CONNECT4 COMP WINS OR DRAWS
+
+
+"""Implement Connect Four Game using min-max algorithm such
+that in every play either computer wins or it is a draw. """
+
+import numpy as np
+import math
+import random
+
+ROW_COUNT = 6
+COLUMN_COUNT = 7
+PLAYER = 0  # Human
+AI = 1      # Computer
+EMPTY = 0
+PLAYER_PIECE = 1
+AI_PIECE = 2
+WINDOW_LENGTH = 4
+DEPTH = 4  # Depth limit for minimax
+
+def create_board():
+    return np.zeros((ROW_COUNT, COLUMN_COUNT), dtype=int)
+
+def drop_piece(board, row, col, piece):
+    board[row][col] = piece
+
+def is_valid_location(board, col):
+    return board[ROW_COUNT - 1][col] == 0
+
+def get_next_open_row(board, col):
+    for r in range(ROW_COUNT):
+        if board[r][col] == 0:
+            return r
+
+def print_board(board):
+    print(np.flip(board, 0))
+
+def winning_move(board, piece):
+    # Horizontal, vertical, diagonal checks
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(ROW_COUNT):
+            if all([board[r][c+i] == piece for i in range(4)]):
+                return True
+
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT - 3):
+            if all([board[r+i][c] == piece for i in range(4)]):
+                return True
+
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(ROW_COUNT - 3):
+            if all([board[r+i][c+i] == piece for i in range(4)]):
+                return True
+
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(3, ROW_COUNT):
+            if all([board[r-i][c+i] == piece for i in range(4)]):
+                return True
+
+    return False
+
+def evaluate_window(window, piece):
+    score = 0
+    opp_piece = PLAYER_PIECE if piece == AI_PIECE else AI_PIECE
+
+    if window.count(piece) == 4:
+        score += 100
+    elif window.count(piece) == 3 and window.count(EMPTY) == 1:
+        score += 5
+    elif window.count(piece) == 2 and window.count(EMPTY) == 2:
+        score += 2
+
+    if window.count(opp_piece) == 3 and window.count(EMPTY) == 1:
+        score -= 4
+
+    return score
+
+def score_position(board, piece):
+    score = 0
+    center = list(board[:, COLUMN_COUNT//2])
+    score += center.count(piece) * 3
+
+    # Horizontal score
+    for r in range(ROW_COUNT):
+        row_array = list(board[r, :])
+        for c in range(COLUMN_COUNT - 3):
+            score += evaluate_window(row_array[c:c+4], piece)
+
+    # Vertical score
+    for c in range(COLUMN_COUNT):
+        col_array = list(board[:, c])
+        for r in range(ROW_COUNT - 3):
+            score += evaluate_window(col_array[r:r+4], piece)
+
+    # Positive diagonals
+    for r in range(ROW_COUNT - 3):
+        for c in range(COLUMN_COUNT - 3):
+            window = [board[r+i][c+i] for i in range(WINDOW_LENGTH)]
+            score += evaluate_window(window, piece)
+
+    # Negative diagonals
+    for r in range(3, ROW_COUNT):
+        for c in range(COLUMN_COUNT - 3):
+            window = [board[r-i][c+i] for i in range(WINDOW_LENGTH)]
+            score += evaluate_window(window, piece)
+
+    return score
+
+def get_valid_locations(board):
+    return [c for c in range(COLUMN_COUNT) if is_valid_location(board, c)]
+
+def is_terminal_node(board):
+    return winning_move(board, PLAYER_PIECE) or winning_move(board, AI_PIECE) or len(get_valid_locations(board)) == 0
+
+def minimax(board, depth, alpha, beta, maximizingPlayer):
+    valid_locations = get_valid_locations(board)
+    terminal = is_terminal_node(board)
+
+    if depth == 0 or terminal:
+        if terminal:
+            if winning_move(board, AI_PIECE):
+                return (None, 1e9)
+            elif winning_move(board, PLAYER_PIECE):
+                return (None, -1e9)
+            else:
+                return (None, 0)
+        else:
+            return (None, score_position(board, AI_PIECE))
+
+    if maximizingPlayer:
+        value = -math.inf
+        best_col = random.choice(valid_locations)
+        for col in valid_locations:
+            row = get_next_open_row(board, col)
+            temp = board.copy()
+            drop_piece(temp, row, col, AI_PIECE)
+            new_score = minimax(temp, depth-1, alpha, beta, False)[1]
+            if new_score > value:
+                value = new_score
+                best_col = col
+            alpha = max(alpha, value)
+            if alpha >= beta:
+                break
+        return best_col, value
+    else:
+        value = math.inf
+        best_col = random.choice(valid_locations)
+        for col in valid_locations:
+            row = get_next_open_row(board, col)
+            temp = board.copy()
+            drop_piece(temp, row, col, PLAYER_PIECE)
+            new_score = minimax(temp, depth-1, alpha, beta, True)[1]
+            if new_score < value:
+                value = new_score
+                best_col = col
+            beta = min(beta, value)
+            if alpha >= beta:
+                break
+        return best_col, value
+
+# === MAIN GAME LOOP ===
+
+board = create_board()
+game_over = False
+print_board(board)
+
+turn = random.randint(PLAYER, AI)
+
+while not game_over:
+    if turn == PLAYER:
+        col = int(input("Enter column (0-6): "))
+        if is_valid_location(board, col):
+            row = get_next_open_row(board, col)
+            drop_piece(board, row, col, PLAYER_PIECE)
+            if winning_move(board, PLAYER_PIECE):
+                print_board(board)
+                print("You win!")
+                game_over = True
+        else:
+            print("Invalid move. Try again.")
+    else:
+        col, _ = minimax(board, DEPTH, -math.inf, math.inf, True)
+        if is_valid_location(board, col):
+            row = get_next_open_row(board, col)
+            drop_piece(board, row, col, AI_PIECE)
+            print(f"Computer chooses column {col}")
+            if winning_move(board, AI_PIECE):
+                print_board(board)
+                print("Computer wins!")
+                game_over = True
+
+    print_board(board)
+
+    if not game_over and len(get_valid_locations(board)) == 0:
+        print("It's a draw!")
+        game_over = True
+
+    turn = (turn + 1) % 2
+
+
+
+Q TASK 16 CONNECT 4 Game loose or draw
+
+
+
+"""Implement Connect Four Game using min-max algorithm such
+that in every play either computer loses or it is a draw. """
+
+import numpy as np
+import random
+
+ROW_COUNT = 6
+COLUMN_COUNT = 7
+
+PLAYER_PIECE = 1
+AI_PIECE = 2
+
+def create_board():
+    return np.zeros((ROW_COUNT, COLUMN_COUNT), dtype=int)
+
+def drop_piece(board, row, col, piece):
+    board[row][col] = piece
+
+def is_valid_location(board, col):
+    return board[0][col] == 0
+
+def get_valid_locations(board):
+    return [col for col in range(COLUMN_COUNT) if is_valid_location(board, col)]
+
+def get_next_open_row(board, col):
+    for r in range(ROW_COUNT-1, -1, -1):
+        if board[r][col] == 0:
+            return r
+
+def print_board(board):
+    print(np.flip(board, 0))  # Flip so the bottom row prints last (like gravity)
+
+def winning_move(board, piece):
+    # Check horizontal
+    for r in range(ROW_COUNT):
+        for c in range(COLUMN_COUNT-3):
+            if all(board[r][c+i] == piece for i in range(4)):
+                return True
+
+    # Check vertical
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT-3):
+            if all(board[r+i][c] == piece for i in range(4)):
+                return True
+
+    # Check positive diagonal
+    for r in range(ROW_COUNT-3):
+        for c in range(COLUMN_COUNT-3):
+            if all(board[r+i][c+i] == piece for i in range(4)):
+                return True
+
+    # Check negative diagonal
+    for r in range(3, ROW_COUNT):
+        for c in range(COLUMN_COUNT-3):
+            if all(board[r-i][c+i] == piece for i in range(4)):
+                return True
+
+    return False
+
+# Start the game
+board = create_board()
+game_over = False
+turn = 0  # 0 for player, 1 for AI
+
+print_board(board)
+
+while not game_over:
+    if turn == 0:
+        # Player Turn
+        col = int(input("Player 1 Make your Selection (0-6): "))
+        if 0 <= col < COLUMN_COUNT and is_valid_location(board, col):
+            row = get_next_open_row(board, col)
+            drop_piece(board, row, col, PLAYER_PIECE)
+
+            if winning_move(board, PLAYER_PIECE):
+                print_board(board)
+                print("PLAYER 1 WINS!")
+                game_over = True
+
+            turn = 1
+        else:
+            print("Invalid move. Try again.")
+    else:
+        # Computer (bad AI) Turn
+        valid_locations = get_valid_locations(board)
+        lose_moves = []
+
+        for col in valid_locations:
+            temp_board = board.copy()
+            row = get_next_open_row(temp_board, col)
+            drop_piece(temp_board, row, col, AI_PIECE)
+
+            if not winning_move(temp_board, AI_PIECE):
+                lose_moves.append(col)
+
+        # If all moves win, allow randomly
+        if lose_moves:
+            col = random.choice(lose_moves)
+        else:
+            col = random.choice(valid_locations)
+
+        if is_valid_location(board, col):
+            row = get_next_open_row(board, col)
+            drop_piece(board, row, col, AI_PIECE)
+            print(f"Computer chooses column {col}")
+
+            if winning_move(board, AI_PIECE):
+                print_board(board)
+                print("COMPUTER WINS! (unexpected!)")
+                game_over = True
+
+            turn = 0
+
+    print_board(board)
+
+    # Check draw
+    if not get_valid_locations(board) and not game_over:
+        print("DRAW! No more moves.")
+        game_over = True
+
+
+
+
+TASK 17  Simple mlp with n binary inputs
+
+"""Implement a simple Multi-Layer Perceptron with N binary inputs, two
+hidden layers and one binary output. Display the final weight matrices, bias
+values and the number of steps. Note that random values are assigned to
+weight matrices and bias in each step. """
+
+import numpy as np
+
+# Activation function (binary step function)
+def binary_step(x):
+    return np.where(x >= 0, 1, 0)
+
+# Forward pass through the network
+def forward_pass(x, weights1, bias1, weights2, bias2, weights3, bias3):
+    hidden1 = binary_step(np.dot(x, weights1) + bias1)
+    hidden2 = binary_step(np.dot(hidden1, weights2) + bias2)
+    output = binary_step(np.dot(hidden2, weights3) + bias3)
+    return output, hidden1, hidden2
+
+
+x = np.array([1, 0])  # Example input vector
+# Randomly initialized weights and biases
+weights1 = np.random.randn(2, 4)   # input layer -> first hidden layer
+bias1 = np.random.randn(4)
+weights2 = np.random.randn(4, 3)   # first hidden layer -> second hidden layer
+bias2 = np.random.randn(3)
+weights3 = np.random.randn(3, 1)   # second hidden layer -> output layer
+bias3 = np.random.randn(1)
+# Perform forward pass
+output, hidden1, hidden2 = forward_pass(x, weights1, bias1, weights2, bias2, weights3, bias3)
+# Show results
+print("Input:", x)
+print("Hidden Layer 1 Output:", hidden1)
+print("Hidden Layer 2 Output:", hidden2)
+print("Final Output:", output)
+
+
+
+TASK 18 SIMPLE MLP WITH 4 binary inputs
+
+"""Implement a simple Multi-Layer Perceptron with 4 binary inputs, one
+hidden layer and two binary outputs. Display the final weight matrices, bias
+values and the number of steps. Note that random values are assigned to
+weight matrices and bias in each step."""
+
+import numpy as np
+
+# Binary step activation function
+def binary_step(x):
+    return np.where(x >= 0, 1, 0)
+
+# Forward pass
+def forward_pass(x, w1, b1, w2, b2):
+    hidden = binary_step(np.dot(x, w1) + b1)
+    output = binary_step(np.dot(hidden, w2) + b2)
+    return output, hidden
+
+if __name__ == "__main__":
+    # Sample input
+    x = np.array([1, 0, 1, 0])
+
+    # Randomly initialized weights and biases
+    w1 = np.random.randn(4, 5)  # 4 inputs → 5 hidden neurons
+    b1 = np.random.randn(5)
+
+    w2 = np.random.randn(5, 2)  # 5 hidden neurons → 2 output neurons
+    b2 = np.random.randn(2)
+
+    # Forward pass
+    output, hidden = forward_pass(x, w1, b1, w2, b2)
+
+    # Display results
+    print("Input:", x)
+    print("Hidden Layer Output:", hidden)
+    print("Final Output:", output)
+
+
+
+TASK 19 SIMPLE MLP BACK PROP SIGNMOID ACTIVATION
+
+
+"""Implement a simple Multi-Layer Perceptron with N binary inputs, two
+hidden layers and one output. Use backpropagation and Sigmoid function
+as activation function. """
+
+import numpy as np
+
+# Sigmoid and its derivative
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    sx = sigmoid(x)
+    return sx * (1 - sx)
+
+# Binary Cross-Entropy Loss
+def binary_cross_entropy(y_true, y_pred):
+    return -np.mean(y_true*np.log(y_pred+1e-8) + (1 - y_true)*np.log(1 - y_pred + 1e-8))
+
+# MLP class
+class MLP:
+    def __init__(self, input_size, hidden1_size, hidden2_size, learning_rate=0.1):
+        self.lr = learning_rate
+        
+        self.w1 = np.random.randn(input_size, hidden1_size)
+        self.b1 = np.zeros((1, hidden1_size))
+        
+        self.w2 = np.random.randn(hidden1_size, hidden2_size)
+        self.b2 = np.zeros((1, hidden2_size))
+        
+        self.w3 = np.random.randn(hidden2_size, 1)
+        self.b3 = np.zeros((1, 1))
+    
+    def forward(self, X):
+        self.z1 = np.dot(X, self.w1) + self.b1
+        self.a1 = sigmoid(self.z1)
+        
+        self.z2 = np.dot(self.a1, self.w2) + self.b2
+        self.a2 = sigmoid(self.z2)
+        
+        self.z3 = np.dot(self.a2, self.w3) + self.b3
+        self.a3 = sigmoid(self.z3)
+        
+        return self.a3
+    
+    def backward(self, X, y, output):
+        m = X.shape[0]
+        error = output - y
+        
+        dz3 = error * sigmoid_derivative(self.z3)
+        dw3 = np.dot(self.a2.T, dz3) / m
+        db3 = np.sum(dz3, axis=0, keepdims=True) / m
+        
+        dz2 = np.dot(dz3, self.w3.T) * sigmoid_derivative(self.z2)
+        dw2 = np.dot(self.a1.T, dz2) / m
+        db2 = np.sum(dz2, axis=0, keepdims=True) / m
+        
+        dz1 = np.dot(dz2, self.w2.T) * sigmoid_derivative(self.z1)
+        dw1 = np.dot(X.T, dz1) / m
+        db1 = np.sum(dz1, axis=0, keepdims=True) / m
+        
+        # Update weights
+        self.w3 -= self.lr * dw3
+        self.b3 -= self.lr * db3
+        
+        self.w2 -= self.lr * dw2
+        self.b2 -= self.lr * db2
+        
+        self.w1 -= self.lr * dw1
+        self.b1 -= self.lr * db1
+
+    def train(self, X, y, epochs=10000, verbose=False):
+        for epoch in range(epochs):
+            output = self.forward(X)
+            loss = binary_cross_entropy(y, output)
+            self.backward(X, y, output)
+            if verbose and epoch % 1000 == 0:
+                print(f"Epoch {epoch}, Loss: {loss:.4f}")
+        print("Training complete.")
+
+# Sample binary input data (N = 3)
+X = np.array([
+    [0, 0, 0],
+    [0, 1, 1],
+    [1, 0, 1],
+    [1, 1, 1]
+])
+
+y = np.array([[0], [1], [1], [0]])  # XOR-like output
+
+# Create and train model
+mlp = MLP(input_size=3, hidden1_size=4, hidden2_size=3, learning_rate=0.5)
+mlp.train(X, y, epochs=10000, verbose=True)
+
+# Final outputs
+print("\nPredictions:")
+print(mlp.forward(X))
+
+print("\nFinal weights and biases:")
+print("w1:\n", mlp.w1)
+print("b1:\n", mlp.b1)
+print("w2:\n", mlp.w2)
+print("b2:\n", mlp.b2)
+print("w3:\n", mlp.w3)
+print("b3:\n", mlp.b3)
+
+
+
+TASK 20  IMPLEMENT SIMPLE NLP RELU
+
+
+"""Implement a simple Multi-Layer Perceptron with N binary inputs, two
+hidden layers and one output. Use backpropagation and ReLU function as
+activation function. """
+
+# import numpy as np
+
+# # ReLU and its derivative
+# def relu(x):
+#     return np.maximum(0, x)
+
+# def relu_derivative(x):
+#     return (x > 0).astype(float)
+
+# # Sigmoid and its derivative (used in output layer)
+# def sigmoid(x):
+#     return 1 / (1 + np.exp(-x))
+
+# def sigmoid_derivative(x):
+#     s = sigmoid(x)
+#     return s * (1 - s)
+
+# # Binary Cross-Entropy Loss
+# def binary_cross_entropy(y_true, y_pred):
+#     return -np.mean(y_true*np.log(y_pred + 1e-8) + (1 - y_true)*np.log(1 - y_pred + 1e-8))
+
+# # MLP class
+# class MLP:
+#     def __init__(self, input_size, hidden1_size, hidden2_size, learning_rate=0.1):
+#         self.lr = learning_rate
+#         self.w1 = np.random.randn(input_size, hidden1_size)
+#         self.b1 = np.zeros((1, hidden1_size))
+        
+#         self.w2 = np.random.randn(hidden1_size, hidden2_size)
+#         self.b2 = np.zeros((1, hidden2_size))
+        
+#         self.w3 = np.random.randn(hidden2_size, 1)
+#         self.b3 = np.zeros((1, 1))
+    
+#     def forward(self, X):
+#         self.z1 = np.dot(X, self.w1) + self.b1
+#         self.a1 = relu(self.z1)
+        
+#         self.z2 = np.dot(self.a1, self.w2) + self.b2
+#         self.a2 = relu(self.z2)
+        
+#         self.z3 = np.dot(self.a2, self.w3) + self.b3
+#         self.a3 = sigmoid(self.z3)
+#         return self.a3
+    
+#     def backward(self, X, y, output):
+#         m = X.shape[0]
+#         error = output - y
+        
+#         dz3 = error * sigmoid_derivative(self.z3)
+#         dw3 = np.dot(self.a2.T, dz3) / m
+#         db3 = np.sum(dz3, axis=0, keepdims=True) / m
+        
+#         dz2 = np.dot(dz3, self.w3.T) * relu_derivative(self.z2)
+#         dw2 = np.dot(self.a1.T, dz2) / m
+#         db2 = np.sum(dz2, axis=0, keepdims=True) / m
+        
+#         dz1 = np.dot(dz2, self.w2.T) * relu_derivative(self.z1)
+#         dw1 = np.dot(X.T, dz1) / m
+#         db1 = np.sum(dz1, axis=0, keepdims=True) / m
+        
+#         # Update weights and biases
+#         self.w3 -= self.lr * dw3
+#         self.b3 -= self.lr * db3
+        
+#         self.w2 -= self.lr * dw2
+#         self.b2 -= self.lr * db2
+        
+#         self.w1 -= self.lr * dw1
+#         self.b1 -= self.lr * db1
+
+#     def train(self, X, y, epochs=10000, verbose=False):
+#         for epoch in range(epochs):
+#             output = self.forward(X)
+#             loss = binary_cross_entropy(y, output)
+#             self.backward(X, y, output)
+#             if verbose and epoch % 1000 == 0:
+#                 print(f"Epoch {epoch}, Loss: {loss:.4f}")
+#         print("Training complete.")
+
+# # Sample data: XOR-like function with 3 binary inputs
+# X = np.array([
+#     [0, 0, 0],
+#     [0, 1, 1],
+#     [1, 0, 1],
+#     [1, 1, 1]
+# ])
+
+# y = np.array([[0], [1], [1], [0]])
+
+# # Create and train the model
+# mlp = MLP(input_size=3, hidden1_size=5, hidden2_size=3, learning_rate=0.1)
+# mlp.train(X, y, epochs=10000, verbose=True)
+
+# # Show predictions and final weights
+# print("\nPredictions:")
+# print(np.round(mlp.forward(X), 3))
+
+# print("\nFinal weights and biases:")
+# print("w1:\n", mlp.w1)
+# print("b1:\n", mlp.b1)
+# print("w2:\n", mlp.w2)
+# print("b2:\n", mlp.b2)
+# print("w3:\n", mlp.w3)
+# print("b3:\n", mlp.b3)
+
+import numpy as np
+
+# ReLU and its derivative
+def relu(x):
+    return np.maximum(0, x)
+
+# Sigmoid
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# MLP class (only forward pass, no training)
+class MLP:
+    def __init__(self, input_size, hidden1_size, hidden2_size):
+        self.w1 = np.random.randn(input_size, hidden1_size)
+        self.b1 = np.zeros((1, hidden1_size))
+        
+        self.w2 = np.random.randn(hidden1_size, hidden2_size)
+        self.b2 = np.zeros((1, hidden2_size))
+        
+        self.w3 = np.random.randn(hidden2_size, 1)
+        self.b3 = np.zeros((1, 1))
+    
+    def forward(self, X):
+        self.z1 = np.dot(X, self.w1) + self.b1
+        self.a1 = relu(self.z1)
+        
+        self.z2 = np.dot(self.a1, self.w2) + self.b2
+        self.a2 = relu(self.z2)
+        
+        self.z3 = np.dot(self.a2, self.w3) + self.b3
+        self.a3 = sigmoid(self.z3)
+        return self.a3
+
+if __name__ == "__main__":
+    # Sample input (same XOR-like example)
+    X = np.array([
+        [0, 0, 0],
+        [0, 1, 1],
+        [1, 0, 1],
+        [1, 1, 1],
+    ])
+
+    # Create the model
+    mlp = MLP(input_size=3, hidden1_size=5, hidden2_size=3)
+
+    # Perform forward pass
+    outputs = mlp.forward(X)
+
+    # Show predictions and final weights
+    print("\nPredictions:")
+    print(np.round(outputs, 3))
+
+    print("\nFinal weights and biases:")
+    print("w1:\n", mlp.w1)
+    print("b1:\n", mlp.b1)
+    print("w2:\n", mlp.w2)
+    print("b2:\n", mlp.b2)
+    print("w3:\n", mlp.w3)
+    print("b3:\n", mlp.b3)
+
+
+TASK 21  SIMPLE MLP BACK PROP TANH
+
+
+"""Implement a simple Multi-Layer Perceptron with N binary inputs, two
+hidden layers and one output. Use backpropagation and Tanh function as
+activation function. """
+
+import numpy as np
+
+# Tanh activation and its derivative
+def tanh(x):
+    return np.tanh(x)
+
+def tanh_derivative(x):
+    return 1 - np.tanh(x) ** 2
+
+# Binary cross-entropy loss
+def binary_cross_entropy(y_true, y_pred):
+    return -np.mean(y_true * np.log(y_pred + 1e-8) + (1 - y_true) * np.log(1 - y_pred + 1e-8))
+
+# Sigmoid for output layer to keep prediction between 0 and 1
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    s = sigmoid(x)
+    return s * (1 - s)
+
+# MLP Class
+class MLP_Tanh:
+    def __init__(self, input_size, hidden1_size, hidden2_size, learning_rate=0.1):
+        self.lr = learning_rate
+        self.w1 = np.random.randn(input_size, hidden1_size)
+        self.b1 = np.zeros((1, hidden1_size))
+        
+        self.w2 = np.random.randn(hidden1_size, hidden2_size)
+        self.b2 = np.zeros((1, hidden2_size))
+        
+        self.w3 = np.random.randn(hidden2_size, 1)
+        self.b3 = np.zeros((1, 1))
+
+    def forward(self, X):
+        self.z1 = np.dot(X, self.w1) + self.b1
+        self.a1 = tanh(self.z1)
+        
+        self.z2 = np.dot(self.a1, self.w2) + self.b2
+        self.a2 = tanh(self.z2)
+        
+        self.z3 = np.dot(self.a2, self.w3) + self.b3
+        self.a3 = sigmoid(self.z3)  # For binary classification
+        return self.a3
+
+    def backward(self, X, y, output):
+        m = X.shape[0]
+        error = output - y
+        
+        dz3 = error * sigmoid_derivative(self.z3)
+        dw3 = np.dot(self.a2.T, dz3) / m
+        db3 = np.sum(dz3, axis=0, keepdims=True) / m
+
+        dz2 = np.dot(dz3, self.w3.T) * tanh_derivative(self.z2)
+        dw2 = np.dot(self.a1.T, dz2) / m
+        db2 = np.sum(dz2, axis=0, keepdims=True) / m
+
+        dz1 = np.dot(dz2, self.w2.T) * tanh_derivative(self.z1)
+        dw1 = np.dot(X.T, dz1) / m
+        db1 = np.sum(dz1, axis=0, keepdims=True) / m
+
+        # Update weights and biases
+        self.w3 -= self.lr * dw3
+        self.b3 -= self.lr * db3
+        self.w2 -= self.lr * dw2
+        self.b2 -= self.lr * db2
+        self.w1 -= self.lr * dw1
+        self.b1 -= self.lr * db1
+
+    def train(self, X, y, epochs=10000, verbose=False):
+        for epoch in range(epochs):
+            output = self.forward(X)
+            loss = binary_cross_entropy(y, output)
+            self.backward(X, y, output)
+            if verbose and epoch % 1000 == 0:
+                print(f"Epoch {epoch}, Loss: {loss:.4f}")
+        print("Training complete.")
+
+# Example input: XOR logic with 3 binary inputs
+X = np.array([
+    [0, 0, 0],
+    [0, 1, 1],
+    [1, 0, 1],
+    [1, 1, 1]
+])
+
+y = np.array([[0], [1], [1], [0]])
+
+# Create and train the model
+mlp = MLP_Tanh(input_size=3, hidden1_size=5, hidden2_size=4, learning_rate=0.1)
+mlp.train(X, y, epochs=10000, verbose=True)
+
+# Predictions and final parameters
+print("\nPredictions:")
+print(np.round(mlp.forward(X), 3))
+
+print("\nFinal weights and biases:")
+print("w1:\n", mlp.w1)
+print("b1:\n", mlp.b1)
+print("w2:\n", mlp.w2)
+print("b2:\n", mlp.b2)
+print("w3:\n", mlp.w3)
+print("b3:\n", mlp.b3)
+
+
+
+NLP PROGRAM 1
+
+"""Write a program to read a text file with at least 30 sentences and 200 words
+and perform the following tasks in the given sequence.
+a. Text cleaning by removing punctuation/special characters, numbers
+and extra white spaces. Use regular expression for the same.
+b. Convert text to lowercase
+c. Tokenization
+d. Remove stop words
+e. Correct misspelled words """
+
+import re
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from spellchecker import SpellChecker
+import os
+
+# nltk.download('punkt')
+# nltk.download('punkt_tab')
+# nltk.download('stopwords')
+
+# Path to file inside "CSV Files" folder
+file_path = os.path.join("CSV Files", "sample_text.txt")
+
+# Step a: Read and clean the text
+with open(file_path, 'r', encoding='utf-8') as file:
+    text = file.read()
+
+# Remove punctuation, numbers, and special characters
+text = re.sub(r'[^A-Za-z\s]', '', text)
+text = re.sub(r'\s+', ' ', text)  # Remove extra spaces
+# print("Cleaned Text:\n", text[:500])  # Print first 500 characters of cleaned text
+# Step b: Convert to lowercase
+text = text.lower()
+
+# Step c: Tokenization (no sentence split to avoid punkt_tab error)
+tokens = word_tokenize(text)
+
+# Step d: Remove stopwords
+stop_words = set(stopwords.words('english'))
+filtered_tokens = [word for word in tokens if word not in stop_words]
+
+# Step e: Correct spelling
+spell = SpellChecker()
+corrected_tokens = [spell.correction(word) for word in filtered_tokens]
+
+# Final Output
+print("Original Tokens:\n", tokens[:50])
+print("\nFiltered Tokens (no stopwords):\n", filtered_tokens[:50])
+print("\nCorrected Tokens:\n", corrected_tokens[:50])
+
+
+
+
+NLP PROGRAM 2
+
+
+"""Write a program to read a text file with at least 30 sentences and 200 words
+and perform the following tasks in the given sequence.
+a. Text cleaning by removing punctuation/special characters, numbers
+and extra white spaces. Use regular expression for the same.
+b. Convert text to lowercase
+c. Stemming and Lemmatization
+d. Create a list of 3 consecutive words after lemmatization """
+
+import re 
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import os
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from nltk.util import ngrams
+
+file_path=os.path.join("CSV Files","sample_text.txt")
+
+# Step a: Read and clean the text
+with open(file_path,'r',encoding='utf-8') as file:
+    text=file.read()
+
+# Remove punctuation, numbers, and special characters
+text=re.sub(r'[^A-Za-z\s]','',text)
+text=re.sub(r'\s+',' ',text)  # Remove extra spaces
+
+# convert to lowercase
+text=text.lower()
+
+# Step b: Tokenize the cleaned text
+tokens = word_tokenize(text)
+# print("Tokens:\n", tokens[:50])  # Print first 50 tokens
+
+# Step c: Remove stop words
+stop_words = set(stopwords.words('english'))
+tokens = [word for word in tokens if word not in stop_words]
+
+# Step d: Perform Stemming and Lemmatization
+# Stemming
+stemmer = PorterStemmer()
+stemmed_tokens = [stemmer.stem(word) for word in tokens]
+
+# Lemmatization
+lemmatizer = WordNetLemmatizer()
+lemmatized_tokens = [lemmatizer.lemmatize(word) for word in tokens]
+
+# Step e: Create a list of 3 consecutive words after lemmatization (Trigrams)
+trigrams = list(ngrams(lemmatized_tokens, 3))
+
+# Display the output (for checking the first few outputs)
+print("Stemmed Tokens:", stemmed_tokens[:10])  # Show first 10 stemmed words
+print("Lemmatized Tokens:", lemmatized_tokens[:10])  # Show first 10 lemmatized words
+print("3 Consecutive Word Sequences:", trigrams[:10])  # Show first 10 trigrams
+
+
+
+
+ONE HOT ENCODING
+
+"""Write a program to read a 3 text files on any technical concept with at least
+20 sentences and 150 words. Implement one-hot encoding. """
+
+import os
+import re
+from sklearn.preprocessing import OneHotEncoder
+import numpy as np
+
+folder_path="CSV Files"
+
+# Define file paths relative to the folder
+file_paths = [
+    os.path.join(folder_path, "text_file1.txt"),
+    os.path.join(folder_path, "text_file2.txt"),
+    os.path.join(folder_path, "text_file3.txt")
+]
+
+# Step 1: Read and clean text from files
+texts = []
+for file_path in file_paths:
+    with open(file_path, 'r', encoding='utf-8') as file:
+        text = file.read()
+        # Remove non-alphabetical characters and convert to lowercase
+        text = re.sub(r'[^A-Za-z\s]', '', text).lower()
+        texts.append(text)
+
+# Combine all texts into a single list of words
+words = []
+for text in texts:
+    words.extend(text.split())
+
+# Step 2: Create a set of unique words
+unique_words = sorted(set(words))
+
+# Step 3: One-hot encoding using sklearn
+encoder = OneHotEncoder(sparse_output=False)
+word_matrix = encoder.fit_transform(np.array(unique_words).reshape(-1, 1))
+
+# Display the one-hot encoded matrix (show first 10 rows for brevity)
+print("One-Hot Encoding for the first 10 unique words:")
+for i in range(min(10, len(unique_words))):
+    print(f"Word: {unique_words[i]} -> One-Hot Encoding: {word_matrix[i]}")
+
+# Optionally save the matrix to a CSV file for future reference
+# np.savetxt("one_hot_encoded_words.csv", word_matrix, delimiter=",", fmt="%d")
+
+
+
+BAG OF WORDS
+
+
+"""Write a program to read a 3 text files on a movie review with at least 20
+sentences and 150 words. Implement bag of words. """
+
+import os
+import re
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Folder where your 3 text files are stored
+folder_path = os.path.join("CSV Files")
+
+# List to store text from selected review files
+documents = []
+
+# Specify only the 3 review file names you want
+review_files = ["review1.txt", "review2.txt", "review3.txt"]
+
+# Read each review file
+for filename in review_files:
+    file_path = os.path.join(folder_path, filename)
+    if os.path.exists(file_path):  # Check if file actually exists
+        with open(file_path, 'r', encoding='utf-8') as file:
+            text = file.read()
+            # Clean text: remove special characters and extra spaces
+            text = re.sub(r'[^A-Za-z\s]', '', text)
+            text = re.sub(r'\s+', ' ', text)
+            text = text.lower()
+            documents.append(text)
+    else:
+        print(f"Warning: {filename} not found!")
+
+# Step 2: Bag of Words using CountVectorizer
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(documents)
+
+# Step 3: Show Results
+print("Feature Names (Vocabulary):")
+print(vectorizer.get_feature_names_out())
+
+print("\nBag of Words Matrix:")
+print(X.toarray())
+
+
+
+NLP TFIDF
+
+
+"""Write a program to read a 3 text files a tourist place with at least 20
+sentences and 150 words. Implement TF-IDF. """
+
+import os
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Folder where your text files are stored
+folder_path = os.path.join("CSV Files")
+
+# List to store text from selected tourist files
+documents = []
+
+# Specify the 3 tourist place files you want
+tourist_files = ["place1.txt", "place2.txt", "place3.txt"]
+
+# Read each file
+for filename in tourist_files:
+    file_path = os.path.join(folder_path, filename)
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            text = file.read()
+            # Clean text: remove special characters and extra spaces
+            text = re.sub(r'[^A-Za-z\s]', '', text)
+            text = re.sub(r'\s+', ' ', text)
+            text = text.lower()
+            documents.append(text)
+    else:
+        print(f"Warning: {filename} not found!")
+
+# Step 2: Apply TF-IDF
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(documents)
+
+# Step 3: Show Results
+print("Feature Names (Vocabulary):")
+print(vectorizer.get_feature_names_out())
+
+print("\nTF-IDF Matrix:")
+print(X.toarray())
+
+
+
+
+
+
